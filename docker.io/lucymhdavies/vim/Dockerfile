@@ -1,6 +1,9 @@
+# Use a separate container to download dependencies
 FROM alpine:latest as git
-RUN apk add --no-cache git && \
-    git clone https://github.com/lucymhdavies/dev_utils.git
+RUN apk add --no-cache git curl go
+RUN git clone https://github.com/lucymhdavies/dev_utils.git
+RUN curl -LSso /pathogen.vim https://tpo.pe/pathogen.vim
+RUN git clone https://github.com/fatih/vim-go.git
 
 
 # docker run -it --rm \
@@ -11,9 +14,20 @@ RUN apk add --no-cache git && \
 
 FROM alpine:latest
 
-# Vim stuff
+# Vim
 RUN apk add --no-cache vim
+
+# Vim Plugins
 COPY --from=git /dev_utils/env/vimrc /home/user/.vimrc
+RUN mkdir -p /home/user/.vim/autoload /home/user/.vim/bundle
+COPY --from=git /pathogen.vim         /home/user/.vim/autoload/pathogen.vim
+
+# Vim-Go + gofmt
+COPY --from=git /vim-go               /home/user/.vim/bundle/vim-go
+COPY --from=git /usr/lib/go/bin/gofmt /usr/bin/gofmt
+# I could get more features of vim-go by installing go in this image,
+# but this is all I'm interested in for now.
+
 
 # UID mapping
 RUN apk add --no-cache shadow su-exec
