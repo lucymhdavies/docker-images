@@ -4,6 +4,8 @@ RUN apk add --no-cache git curl go
 RUN git clone https://github.com/lucymhdavies/dev_utils.git
 RUN curl -LSso /pathogen.vim https://tpo.pe/pathogen.vim
 RUN git clone https://github.com/fatih/vim-go.git
+RUN git clone https://github.com/vim-airline/vim-airline
+RUN git clone https://github.com/vim-airline/vim-airline-themes
 
 
 # docker run -it --rm \
@@ -27,6 +29,10 @@ COPY --from=git /vim-go               /home/user/.vim/bundle/vim-go
 COPY --from=git /usr/lib/go/bin/gofmt /usr/bin/gofmt
 # I could get more features of vim-go by installing go in this image,
 # but this is all I'm interested in for now.
+
+# Airline
+COPY --from=git /vim-airline           /home/user/.vim/bundle/vim-airline
+COPY --from=git /vim-airline-themes    /home/user/.vim/bundle/vim-airline-themes
 
 
 # UID mapping
