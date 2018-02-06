@@ -1,11 +1,15 @@
 # Use a separate container to download dependencies
 FROM alpine:latest as git
-RUN apk add --no-cache git curl go
+RUN apk add --no-cache git curl go unzip
 RUN git clone https://github.com/lucymhdavies/dev_utils.git
 RUN curl -LSso /pathogen.vim https://tpo.pe/pathogen.vim
 RUN git clone https://github.com/fatih/vim-go.git
 RUN git clone https://github.com/vim-airline/vim-airline
 RUN git clone https://github.com/vim-airline/vim-airline-themes
+RUN git clone https://github.com/hashivim/vim-terraform.git
+
+RUN wget https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_linux_amd64.zip
+RUN unzip terraform_0.11.3_linux_amd64.zip
 
 
 # docker run -it --rm \
@@ -29,10 +33,18 @@ COPY --from=git /vim-go               /home/user/.vim/bundle/vim-go
 COPY --from=git /usr/lib/go/bin/gofmt /usr/bin/gofmt
 # I could get more features of vim-go by installing go in this image,
 # but this is all I'm interested in for now.
+# TODO: above requires GoFmt
+# This should instead be a sibling container
 
 # Airline
 COPY --from=git /vim-airline           /home/user/.vim/bundle/vim-airline
 COPY --from=git /vim-airline-themes    /home/user/.vim/bundle/vim-airline-themes
+
+# Vim-Terraform
+COPY --from=git /vim-terraform         /home/user/.vim/bundle/vim-terraform
+COPY --from=git /terraform             /usr/bin/terraform
+# TODO: above requires Terraform
+# This should instead be a sibling container
 
 
 # UID mapping
