@@ -45,6 +45,7 @@ COPY --from=git /vim-terraform         /home/user/.vim/bundle/vim-terraform
 COPY --from=git /terraform             /usr/bin/terraform
 # TODO: above requires Terraform
 # This should instead be a sibling container
+# i.e. a wrapper for `lucli terraform`
 
 
 # UID mapping
